@@ -1,8 +1,15 @@
 local wezterm = require("wezterm")
+local path = ""
+
+for plugin in wezterm.plugins.list() do
+	if plugin.url == "https://github.com/MLFlexer/smart_workspace_switcher.wezterm" then
+		path = plugin.plugin_dir
+	end
+end
 
 wezterm.on("smart_workspace_switcher", function(window, pane)
 	local mux_window = window:mux_window()
-	local tab, tab_pane, tab_window = mux_window:spawn_tab({ args = { "path/to/workspace_switcher.sh" } })
+	local tab, tab_pane, tab_window = mux_window:spawn_tab({ args = { path .. "/script/workspace_switcher.sh" } })
 end)
 
 local M = {}
