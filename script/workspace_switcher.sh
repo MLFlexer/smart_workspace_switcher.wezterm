@@ -32,16 +32,15 @@ if [ $# -eq 1 ]; then
 else
 
   BORDER_LABEL=" NAME "
-  HEADER=" ctrl-s: sessions / ctrl-z: zoxide / ctrl-d: directory"
-  # PROMPT=$(get_fzf_prompt)
-  SESSION_BIND="ctrl-s:change-prompt(sessions> )+reload(wezterm cli list --format json | sed -nr 's/\"workspace\": \"(.*)\",/\1/p' | uniq | sed -r 's/\s+//g')"
+  HEADER=" ctrl-s: Workspaces / ctrl-z: zoxide / ctrl-d: directory"
+  PROMPT="zoxide> "
+  SESSION_BIND="ctrl-s:change-prompt(Workspaces> )+reload(wezterm cli list --format json | sed -nr 's/\"workspace\": \"(.*)\",/\1/p' | uniq | sed -r 's/\s+//g')"
   ZOXIDE_BIND="ctrl-z:change-prompt(zoxide> )+reload(zoxide query -l | sed -e \"$HOME_REPLACER\")"
 
   if fd --version &>/dev/null; then # fd is installed
     DIR_BIND="ctrl-d:change-prompt(directory> )+reload(cd $HOME && echo $HOME; fd --type d --hidden --absolute-path --color never --exclude .git --exclude node_modules)"
   else # fd is not installed
     DIR_BIND="ctrl-d:change-prompt(directory> )+reload(cd $HOME && find ~+ -type d -name node_modules -prune -o -name .git -prune -o -type d -print)"
-    #    DIR_BIND="ctrl-g:change-prompt(directory> )+reload(cd $HOME && find ~+ -type d -name node_modules -prune -o -name .git -prune -o -type d -print)"
   fi
 
 
@@ -51,7 +50,7 @@ else
     --bind "$ZOXIDE_BIND" \
     --border-label "$BORDER_LABEL" \
     --header "$HEADER" \
-    #				--prompt "$PROMPT"
+    --prompt "$PROMPT"
   )
 fi
 
