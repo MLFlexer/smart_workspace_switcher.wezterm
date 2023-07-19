@@ -7,9 +7,12 @@ for plugin in wezterm.plugins.list() do
 	end
 end
 
+wezterm.log_info(path .. "/script/workspace_switcher.sh")
+
 wezterm.on("smart_workspace_switcher", function(window, pane)
 	local mux_window = window:mux_window()
 	local tab, tab_pane, tab_window = mux_window:spawn_tab({ args = { path .. "/script/workspace_switcher.sh" } })
+	wezterm.log_info(path .. "/script/workspace_switcher.sh")
 end)
 
 local M = {}
