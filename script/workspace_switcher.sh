@@ -66,5 +66,3 @@ fi
 __wezterm_set_user_var "workspace_switch" $SESSION_NAME
 
 zoxide add "$SESSION_NAME" &>/dev/null # add to zoxide database
-
-sleep 1

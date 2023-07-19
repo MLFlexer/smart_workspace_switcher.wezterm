@@ -1,18 +1,27 @@
 local wezterm = require("wezterm")
 local path = ""
 
-for plugin in wezterm.plugins.list() do
+wezterm.log_info(wezterm.plugin.list())
+for _, plugin in ipairs(wezterm.plugin.list()) do
 	if plugin.url == "https://github.com/MLFlexer/smart_workspace_switcher.wezterm" then
 		path = plugin.plugin_dir
 	end
 end
 
-wezterm.log_info(path .. "/script/workspace_switcher.sh")
-
 wezterm.on("smart_workspace_switcher", function(window, pane)
-	local mux_window = window:mux_window()
-	local tab, tab_pane, tab_window = mux_window:spawn_tab({ args = { path .. "/script/workspace_switcher.sh" } })
-	wezterm.log_info(path .. "/script/workspace_switcher.sh")
+	if path == "" then
+		wezterm.log_error("path is empty")
+		return
+	end
+	local current_tab_id = pane:tab():tab_id()
+	local cmd = path
+		.. "/script/workspace_switcher.sh "
+		.. "; wezterm cli activate-tab --tab-id "
+		.. current_tab_id
+		.. " ; exit\n"
+	local tab, tab_pane, tab_window = window:mux_window():spawn_tab({})
+	tab_pane:send_text(cmd)
+	tab:set_title(wezterm.nerdfonts.md_dock_window .. " Workspace Switcher")
 end)
 
 local M = {}
