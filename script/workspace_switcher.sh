@@ -27,6 +27,8 @@ if [ $HOME_SED_SAFE -eq 0 ]; then # $HOME should be safe to use in sed
   HOME_REPLACER="s|^$HOME/|~/|"
 fi
 
+
+
 if [ $# -eq 1 ]; then
   SESSION_NAME=$(zoxide query "$1")
 else
@@ -54,7 +56,14 @@ else
   )
 fi
 
+if [ "$1" = "--tab-id" ]; then
+  TABID=$2
+fi
+
 if [ "$SESSION_NAME" = "" ]; then # no result
+  if [ -n "$TABID"  ]; then # switch to tab when complete
+    wezterm cli activate-tab --tab-id $TABID
+  fi
   exit 0
 fi
 

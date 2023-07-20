@@ -3,7 +3,7 @@ local path = ""
 
 for _, plugin in ipairs(wezterm.plugin.list()) do
 	if plugin.url == "https://github.com/MLFlexer/smart_workspace_switcher.wezterm" then
-		path = plugin.plugin_dir
+		path = plugin.plugin_dir .. "/script/workspace_switcher.sh"
 	end
 end
 
@@ -13,12 +13,7 @@ wezterm.on("smart_workspace_switcher", function(window, pane)
 		return
 	end
 	local current_tab_id = pane:tab():tab_id()
-	local cmd = path
-		.. "/script/workspace_switcher.sh ; wezterm cli activate-tab --tab-id "
-		.. current_tab_id
-		.. " ; exit\n"
-	local tab, tab_pane, tab_window = window:mux_window():spawn_tab({})
-	tab_pane:send_text(cmd)
+	local tab, _, _ = window:mux_window():spawn_tab({ args = { path, "--tab-id", tostring(current_tab_id) } })
 	tab:set_title(wezterm.nerdfonts.md_dock_window .. " Workspace Switcher")
 end)
 
