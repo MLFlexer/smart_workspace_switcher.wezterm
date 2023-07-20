@@ -1,7 +1,7 @@
 # smart_workspace_switcher.wezterm
 A smart wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager)
 ## Usage
-💨 Quickly switch between workspaces with a single keybinding and the power of fuzzy finding! 💨
+💨 Level up your workflow by switching between workspaces ⚡ ***BLAZINGLY FAST*** ⚡ with 1️⃣ keypress and the power of fuzzy finding! 💨
 
 [Demo video](https://youtu.be/daul-4Fg20U)
 
@@ -82,5 +82,5 @@ wezterm.config.keys = {
 
 4. **Optionally** alias the shell script:
 ```shell
-alias ws="~/repos/smart_workspace_switcher.wezterm/script/workspace_switcher.sh"
+alias ws="/YOUR/PATH/TO/THE/SCRIPT/script/workspace_switcher.sh"
 ```
