@@ -24,18 +24,14 @@ local path = "PATH_TO_SCRIPT/workspace_switcher.sh"
 
 wezterm.on("smart_workspace_switcher", function(window, pane)
 	if path == "" then
-		wezterm.log_error("path is empty")
+		wezterm.log_error("workspace_switcher.sh not found")
 		return
 	end
 	local current_tab_id = pane:tab():tab_id()
-	local cmd = path
-		.. " ; wezterm cli activate-tab --tab-id "
-		.. current_tab_id
-		.. " ; exit\n"
-	local tab, tab_pane, tab_window = window:mux_window():spawn_tab({})
-	tab_pane:send_text(cmd)
-	tab:set_title(wezterm.nerdfonts.md_dock_window .. " Workspace Switcher")
+	local tab, _, _ = window:mux_window():spawn_tab({ args = { path, "--tab-id", tostring(current_tab_id) } })
+	tab:set_title("Workspace Switcher")
 end)
+
 ```
 4. Follow steps in setup section.
 ### Automated Install
@@ -59,7 +55,15 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
 			}),
 			pane
 		)
-		window:set_right_status(window:active_workspace()) -- Updates the status bar
+		window:set_right_status(window:active_workspace())
+	elseif name == "workspace_switch_session_name" then
+		window:perform_action(
+			act.SwitchToWorkspace({
+				name = value,
+			}),
+			pane
+		)
+		window:set_right_status(window:active_workspace())
 	end
 end)
 ```
@@ -78,5 +82,5 @@ wezterm.config.keys = {
 
 4. **Optionally** alias the shell script:
 ```shell
-alias ws="~/.config/wezterm/scripts/workspace_switcher.sh"
+alias ws="~/repos/smart_workspace_switcher.wezterm/script/workspace_switcher.sh"
 ```
