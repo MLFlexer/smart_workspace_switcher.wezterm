@@ -71,6 +71,12 @@ if [ $HOME_SED_SAFE -eq 0 ]; then
   SESSION_NAME=$(echo "$SESSION_NAME" | sed -e "s|^~/|$HOME/|") # replace ~ with $HOME
 fi
 
-__wezterm_set_user_var "workspace_switch" $SESSION_NAME
+if [ -d $SESSION_NAME ]; then
+  __wezterm_set_user_var "workspace_switch" $SESSION_NAME
 
-zoxide add "$SESSION_NAME" &>/dev/null # add to zoxide database
+  zoxide add "$SESSION_NAME" &>/dev/null # add to zoxide database
+else
+  __wezterm_set_user_var "workspace_switch_session_name" $SESSION_NAME
+fi
+
+sleep 1
