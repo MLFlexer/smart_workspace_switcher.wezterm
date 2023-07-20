@@ -9,7 +9,7 @@ end
 
 wezterm.on("smart_workspace_switcher", function(window, pane)
 	if path == "" then
-		wezterm.log_error("path is empty")
+		wezterm.log_error("workspace_switcher.sh not found")
 		return
 	end
 	local current_tab_id = pane:tab():tab_id()
