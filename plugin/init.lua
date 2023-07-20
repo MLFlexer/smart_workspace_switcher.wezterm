@@ -1,14 +1,16 @@
 local wezterm = require("wezterm")
-local path = ""
 
-for _, plugin in ipairs(wezterm.plugin.list()) do
-	if plugin.url == "https://github.com/MLFlexer/smart_workspace_switcher.wezterm" then
-		path = plugin.plugin_dir .. "/script/workspace_switcher.sh"
+local function resolve_script_path()
+	for _, plugin in ipairs(wezterm.plugin.list()) do
+		if plugin.url == "https://github.com/MLFlexer/smart_workspace_switcher.wezterm" then
+			return plugin.plugin_dir .. "/script/workspace_switcher.sh"
+		end
 	end
 end
 
 wezterm.on("smart_workspace_switcher", function(window, pane)
-	if path == "" then
+	local path = resolve_script_path()
+	if not path then
 		wezterm.log_error("workspace_switcher.sh not found")
 		return
 	end
