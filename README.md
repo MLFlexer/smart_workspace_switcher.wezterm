@@ -1,7 +1,7 @@
 # smart_workspace_switcher.wezterm
 A smart wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager)
 ## Usage
-💨 Level up your workflow by switching between workspaces ⚡ ***BLAZINGLY FAST*** ⚡ with 1️⃣ keypress and the power of fuzzy finding and zoxide! 💨
+💨 Level up your workflow by switching between workspaces ⚡ ***BLAZINGLY FAST*** ⚡ with 1️⃣ keypress, the power of fuzzy finding and zoxide! 💨
 
 [Demo video](https://youtu.be/daul-4Fg20U)
 
