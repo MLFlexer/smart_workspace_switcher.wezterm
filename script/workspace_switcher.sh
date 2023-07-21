@@ -57,13 +57,10 @@ else
 fi
 
 if [ "$1" = "--tab-id" ]; then
-  TABID=$2
+  wezterm cli activate-tab --tab-id $2
 fi
 
 if [ "$SESSION_NAME" = "" ]; then # no result
-  if [ -n "$TABID"  ]; then # switch to tab when complete
-    wezterm cli activate-tab --tab-id $TABID
-  fi
   exit 0
 fi
 
