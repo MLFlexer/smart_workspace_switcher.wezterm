@@ -33,7 +33,6 @@ if [ $# -eq 1 ]; then
   SESSION_NAME=$(zoxide query "$1")
 else
 
-  BORDER_LABEL=" NAME "
   HEADER=" ctrl-s: Workspaces / ctrl-z: zoxide / ctrl-d: directory"
   PROMPT="zoxide> "
   SESSION_BIND="ctrl-s:change-prompt(Workspaces> )+reload(wezterm cli list --format json | sed -nr 's/\"workspace\": \"(.*)\",/\1/p' | uniq | sed -r 's/\s+//g')"
@@ -50,7 +49,6 @@ else
     --bind "$DIR_BIND" \
     --bind "$SESSION_BIND" \
     --bind "$ZOXIDE_BIND" \
-    --border-label "$BORDER_LABEL" \
     --header "$HEADER" \
     --prompt "$PROMPT"
   )
