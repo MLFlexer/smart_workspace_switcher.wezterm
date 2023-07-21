@@ -20,10 +20,9 @@ A smart wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session
 3. Add the following to your wezterm config:
 ```lua
 -- Update the path variable with the real path of the script:
-local path = "PATH_TO_SCRIPT/workspace_switcher.sh"
-
 wezterm.on("smart_workspace_switcher", function(window, pane)
-	if path == "" then
+	local path = wezterm.home_dir .. "/PATH/FROM/HOMEDIR/workspace_switcher.sh"
+	if not path then
 		wezterm.log_error("workspace_switcher.sh not found")
 		return
 	end
