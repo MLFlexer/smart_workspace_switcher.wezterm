@@ -3,7 +3,8 @@ A smart Wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session
 ## Usage
 💨 Level up your workflow by switching between workspaces ⚡ ***BLAZINGLY FAST*** ⚡ with 1️⃣ keypress, the power of fuzzy finding and zoxide! 💨
 
-[Demo video](https://youtu.be/AhmSPRC6Uc4)
+![Demo gif](https://github.com/MLFlexer/smart_workspace_switcher.wezterm/assets/75012728/a4f82fcf-5304-4891-a1e2-346767678dc6)
+
 
 ## Dependencies
 * zoxide
