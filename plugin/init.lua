@@ -89,7 +89,7 @@ local function apply_to_config(config, key, mods, formatter)
 	table.insert(config.keys, {
 		key = key,
 		mods = mods,
-		action = workspace_switcher.workspace_switcher(formatter),
+		action = workspace_switcher(formatter),
 	})
 end
 

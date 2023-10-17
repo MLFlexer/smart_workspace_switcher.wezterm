@@ -17,18 +17,12 @@ local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/s
 
 2. Add a keybinding and formatter for Workspace labels:
 ```lua
-wezterm.config.keys = {
-	{
-		key = "s",
-		mods = "ALT",
-		action = workspace_switcher.workspace_switcher(function(label)
-			return wezterm.format({
-				-- { Attribute = { Italic = true } },
-				-- { Foreground = { Color = "green" } },
-				-- { Background = { Color = "black" } },
-				{ Text = "󱂬: " .. label },
-			})
-		end),
-	},
-  -- ... other keybindings you may have
-}
+workspace_switcher.apply_to_config(config, "b", "ALT", function(label)
+  return wezterm.format({
+    -- { Attribute = { Italic = true } },
+    -- { Foreground = { Color = "green" } },
+    -- { Background = { Color = "black" } },
+    { Text = "󱂬: " .. label },
+  })
+end)
+```
