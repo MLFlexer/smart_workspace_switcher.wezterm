@@ -2,9 +2,7 @@ local wezterm = require("wezterm")
 local act = wezterm.action
 
 local function get_zoxide_workspaces(workspace_formatter)
-	local handle = io.popen('zoxide query -l | sed -e "s|^' .. wezterm.home_dir .. '/|~/|"')
-	local output = handle:read("*a")
-	handle:close()
+	local _, stdout, _ = wezterm.run_child_process({ "zoxide", "query", "-l" })
 
 	local workspace_table = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
@@ -13,10 +11,11 @@ local function get_zoxide_workspaces(workspace_formatter)
 			label = workspace_formatter(workspace),
 		})
 	end
-	for _, path in ipairs(wezterm.split_by_newlines(output)) do
+	for _, path in ipairs(wezterm.split_by_newlines(stdout)) do
+		local updated_path = string.gsub(path, wezterm.home_dir, "~")
 		table.insert(workspace_table, {
 			id = path,
-			label = path,
+			label = updated_path,
 		})
 	end
 	return workspace_table
