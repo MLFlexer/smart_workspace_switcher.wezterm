@@ -31,7 +31,7 @@ local function workspace_switcher(workspace_formatter)
 					if not id and not label then -- do nothing
 					else
 						local fullPath = string.gsub(label, "^~", wezterm.home_dir)
-						if fullPath:sub(1, 1) == "/" then
+						if fullPath:sub(1, 1) == "/" or fullPath:sub(3, 3) == "\\" then
 							-- if path is choosen
 							inner_window:perform_action(
 								act.SwitchToWorkspace({
