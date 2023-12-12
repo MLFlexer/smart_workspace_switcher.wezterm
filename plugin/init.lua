@@ -77,16 +77,11 @@ local function workspace_switcher()
 	end)
 end
 
-local function apply_to_config(config, key, mods, formatter)
-	if key == nil then
-		key = "s"
-	end
-	if mods == nil then
-		mods = "s"
-	end
+-- sets a default keybind to ALT-s
+local function apply_to_config(config)
 	table.insert(config.keys, {
-		key = key,
-		mods = mods,
+		key = "s",
+		mods = "ALT",
 		action = workspace_switcher(),
 	})
 end
@@ -103,4 +98,5 @@ return {
 	apply_to_config = apply_to_config,
 	set_zoxide_path = set_zoxide_path,
 	set_workspace_formatter = set_workspace_formatter,
+	key_action = workspace_switcher,
 }
