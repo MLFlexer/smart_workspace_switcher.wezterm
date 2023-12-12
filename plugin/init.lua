@@ -1,8 +1,9 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
+local zoxide_path = "zoxide"
 
 local function get_zoxide_workspaces(workspace_formatter)
-	local _, stdout, _ = wezterm.run_child_process({ "zoxide", "query", "-l" })
+	local _, stdout, _ = wezterm.run_child_process({ zoxide_path, "query", "-l" })
 
 	local workspace_table = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
@@ -92,4 +93,11 @@ local function apply_to_config(config, key, mods, formatter)
 	})
 end
 
-return { apply_to_config = apply_to_config }
+local function set_zoxide_path(path)
+	zoxide_path = path
+end
+
+return {
+	apply_to_config = apply_to_config,
+	set_zoxide_path = set_zoxide_path
+}
