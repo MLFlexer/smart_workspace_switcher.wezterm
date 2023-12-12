@@ -98,5 +98,5 @@ return {
 	apply_to_config = apply_to_config,
 	set_zoxide_path = set_zoxide_path,
 	set_workspace_formatter = set_workspace_formatter,
-	key_action = workspace_switcher,
+	switch_workspace = workspace_switcher,
 }
