@@ -47,7 +47,7 @@ local function workspace_switcher(workspace_formatter)
 							window:set_right_status(window:active_workspace() .. "  ")
 							-- increment path score
 							wezterm.run_child_process({
-								"zoxide",
+								zoxide_path,
 								"add",
 								fullPath,
 							})
@@ -99,5 +99,5 @@ end
 
 return {
 	apply_to_config = apply_to_config,
-	set_zoxide_path = set_zoxide_path
+	set_zoxide_path = set_zoxide_path,
 }
