@@ -1,8 +1,13 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local zoxide_path = "zoxide"
+local workspace_formatter = function(label)
+	return wezterm.format({
+		{ Text = "󱂬: " .. label },
+	})
+end
 
-local function get_zoxide_workspaces(workspace_formatter)
+local function get_zoxide_workspaces()
 	local _, stdout, _ = wezterm.run_child_process({ zoxide_path, "query", "-l" })
 
 	local workspace_table = {}
@@ -22,9 +27,9 @@ local function get_zoxide_workspaces(workspace_formatter)
 	return workspace_table
 end
 
-local function workspace_switcher(workspace_formatter)
+local function workspace_switcher()
 	return wezterm.action_callback(function(window, pane)
-		local workspaces = get_zoxide_workspaces(workspace_formatter)
+		local workspaces = get_zoxide_workspaces()
 
 		window:perform_action(
 			act.InputSelector({
@@ -47,7 +52,7 @@ local function workspace_switcher(workspace_formatter)
 							window:set_right_status(window:active_workspace() .. "  ")
 							-- increment path score
 							wezterm.run_child_process({
-								"zoxide",
+								zoxide_path,
 								"add",
 								fullPath,
 							})
@@ -72,24 +77,12 @@ local function workspace_switcher(workspace_formatter)
 	end)
 end
 
-local function apply_to_config(config, key, mods, formatter)
-	if key == nil then
-		key = "s"
-	end
-	if mods == nil then
-		mods = "s"
-	end
-	if formatter == nil then
-		formatter = function(label)
-			return wezterm.format({
-				{ Text = "󱂬: " .. label },
-			})
-		end
-	end
+-- sets a default keybind to ALT-s
+local function apply_to_config(config)
 	table.insert(config.keys, {
-		key = key,
-		mods = mods,
-		action = workspace_switcher(formatter),
+		key = "s",
+		mods = "ALT",
+		action = workspace_switcher(),
 	})
 end
 
@@ -97,7 +90,13 @@ local function set_zoxide_path(path)
 	zoxide_path = path
 end
 
+local function set_workspace_formatter(formatter)
+	workspace_formatter = formatter
+end
+
 return {
 	apply_to_config = apply_to_config,
-	set_zoxide_path = set_zoxide_path
+	set_zoxide_path = set_zoxide_path,
+	set_workspace_formatter = set_workspace_formatter,
+	switch_workspace = workspace_switcher,
 }

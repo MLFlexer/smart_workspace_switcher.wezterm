@@ -21,21 +21,46 @@ A smart Wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session
     local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
     ```
 
-2. Optionally set the path to Zoxide:
+2. Apply default keybinding to config:
 
     ```lua
-    workspace_switcher.set_zoxide_path("/custom/path/zoxide)
+    workspace_switcher.apply_to_config(config)
     ```
 
-3. Add a keybinding and formatter for Workspace labels:
+Or make your own keybinding, see [Configuration - Keybinding](#Keybinding)
 
-    ```lua
-    workspace_switcher.apply_to_config(config, "b", "ALT", function(label)
-      return wezterm.format({
-        -- { Attribute = { Italic = true } },
-        -- { Foreground = { Color = "green" } },
-        -- { Background = { Color = "black" } },
-        { Text = "󱂬: " .. label },
-      })
-    end)
-    ```
+
+### Configuration:
+#### Keybinding
+Add custom keybinding
+
+  ```lua
+  config.keys = {
+    -- ...
+    -- your other keybindings
+    {
+    key = "s",
+    mods = "ALT",
+    action = workspace_switcher.switch_workspace(),
+    }
+  }
+  ```
+#### Workspace formatter
+Set a custom workspace formatter, see [Wezterm formatting docs](https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
+
+  ```lua
+  workspace_switcher.set_workspace_formatter(function(label)
+    return wezterm.format({
+      { Attribute = { Italic = true } },
+      { Foreground = { Color = "green" } },
+      { Background = { Color = "black" } },
+      { Text = "󱂬: " .. label },
+    })
+  end)
+  ```
+#### Zoxide path
+Define path to zoxide:
+
+  ```lua
+  workspace_switcher.set_zoxide_path("/path/to/zoxide)
+  ```
