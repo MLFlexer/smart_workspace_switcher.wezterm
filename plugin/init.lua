@@ -1,12 +1,20 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
+
+---@alias action_callback any
+
+---@type string
 local zoxide_path = "zoxide"
+
+---@param label string
+---@return string
 local workspace_formatter = function(label)
 	return wezterm.format({
 		{ Text = "󱂬: " .. label },
 	})
 end
 
+---@return { id: string, label: string }[]
 local function get_zoxide_workspaces()
 	local _, stdout, _ = wezterm.run_child_process({ zoxide_path, "query", "-l" })
 
@@ -27,6 +35,7 @@ local function get_zoxide_workspaces()
 	return workspace_table
 end
 
+---@return action_callback
 local function workspace_switcher()
 	return wezterm.action_callback(function(window, pane)
 		local workspaces = get_zoxide_workspaces()
@@ -75,7 +84,8 @@ local function workspace_switcher()
 	end)
 end
 
--- sets a default keybind to ALT-s
+---sets a default keybind to ALT-s
+---@param config table
 local function apply_to_config(config)
 	table.insert(config.keys, {
 		key = "s",
@@ -84,10 +94,12 @@ local function apply_to_config(config)
 	})
 end
 
+---@param path string
 local function set_zoxide_path(path)
 	zoxide_path = path
 end
 
+---@param formatter fun(label: string): string
 local function set_workspace_formatter(formatter)
 	workspace_formatter = formatter
 end
