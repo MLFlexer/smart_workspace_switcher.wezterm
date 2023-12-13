@@ -45,6 +45,26 @@ Add custom keybinding
     }
   }
   ```
+#### Update right-status with the path
+Adding the path as a part of the right-status can be done via. [update-right-status](https://wezfurlong.org/wezterm/config/lua/window-events/update-right-status.html) event
+
+  ```lua
+  local function base_path_name(str)
+    return string.gsub(str, "(.*[/\\])(.*)", "%2")
+  end
+
+  local function update_right_status(window)
+    local title = base_path_name(window:active_workspace())
+    window:set_right_status(wezterm.format({
+      { Foreground = { Color = "green" } },
+      { Text = title .. "  " },
+    }))
+  end
+
+  wezterm.on("update-right-status", function(window, _)
+    update_right_status(window)
+  end)
+  ```
 #### Workspace formatter
 Set a custom workspace formatter, see [Wezterm formatting docs](https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
 
