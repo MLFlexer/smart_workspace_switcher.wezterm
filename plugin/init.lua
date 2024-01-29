@@ -16,7 +16,7 @@ end
 
 ---@return { id: string, label: string }[]
 local function get_zoxide_workspaces()
-	local _, stdout, _ = wezterm.run_child_process({ zoxide_path, "query", "-l" })
+	local _, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " query -l" })
 
 	local workspace_table = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
