@@ -59,11 +59,7 @@ local function workspace_switcher()
 								inner_pane
 							)
 							-- increment path score
-							wezterm.run_child_process({
-								zoxide_path,
-								"add",
-								fullPath,
-							})
+							wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " add " .. fullPath })
 						else
 							-- if workspace is choosen
 							inner_window:perform_action(
