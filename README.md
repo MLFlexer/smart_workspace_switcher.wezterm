@@ -45,6 +45,30 @@ Add custom keybinding
     }
   }
   ```
+
+##### Additional filtering
+
+Users may also choose to include `extra_args` in the call to `switch_workspace`. The string contents of this value are appended to the call to `zoxide query -l`. This can be used to further filter the results of the query. For example, imagine one has a predefined list of projects from which they wish to select. It might be a file, ~/.projects, with contents like:
+
+```
+/Users/you/projects/gitlab.com/foo/bar
+/Users/you/projects/github.com/MLFlexer/smart_workspace_switcher.wezterm
+```
+
+If you want your project switcher only to select projects from this list, but still make use of the zoxide query ordering, you can call the plugin as:
+
+  ```lua
+  config.keys = {
+    -- ...
+    -- your other keybindings
+    {
+    key = "s",
+    mods = "ALT",
+    action = workspace_switcher.switch_workspace(" | rg -Fxf ~/.projects"),
+    }
+  }
+  ```
+
 #### Update right-status with the path
 Adding the path as a part of the right-status can be done via. [update-right-status](https://wezfurlong.org/wezterm/config/lua/window-events/update-right-status.html) event
 
