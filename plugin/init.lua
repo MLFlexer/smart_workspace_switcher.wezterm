@@ -14,7 +14,7 @@ local workspace_formatter = function(label)
 	})
 end
 
----@param extra_args string
+---@param extra_args? string
 ---@return { id: string, label: string }[]
 local function get_zoxide_workspaces(extra_args)
   if extra_args == nil then extra_args = "" end
@@ -37,7 +37,7 @@ local function get_zoxide_workspaces(extra_args)
 	return workspace_table
 end
 
----@param extra_args string
+---@param extra_args? string
 ---@return action_callback
 local function workspace_switcher(extra_args)
 	return wezterm.action_callback(function(window, pane)
