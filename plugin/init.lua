@@ -14,9 +14,11 @@ local workspace_formatter = function(label)
 	})
 end
 
+---@param extra_args? string
 ---@return { id: string, label: string }[]
-local function get_zoxide_workspaces()
-	local _, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " query -l" })
+local function get_zoxide_workspaces(extra_args)
+  if extra_args == nil then extra_args = "" end
+	local _, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " query -l " .. extra_args })
 
 	local workspace_table = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
@@ -35,10 +37,11 @@ local function get_zoxide_workspaces()
 	return workspace_table
 end
 
+---@param extra_args? string
 ---@return action_callback
-local function workspace_switcher()
+local function workspace_switcher(extra_args)
 	return wezterm.action_callback(function(window, pane)
-		local workspaces = get_zoxide_workspaces()
+		local workspaces = get_zoxide_workspaces(extra_args)
 
 		window:perform_action(
 			act.InputSelector({
