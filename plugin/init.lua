@@ -14,11 +14,24 @@ local workspace_formatter = function(label)
 	})
 end
 
+---@param cmd string
+---@return string
+local run_child_process = function(cmd)
+	local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
+	local stdout
+	if is_windows then
+		_, stdout, _ = wezterm.run_child_process({ "cmd", "/c", cmd })
+	else
+		_, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+	end
+	return stdout
+end
+
 ---@param extra_args? string
 ---@return { id: string, label: string }[]
 local function get_zoxide_workspaces(extra_args)
-  if extra_args == nil then extra_args = "" end
-	local _, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " query -l " .. extra_args })
+	if extra_args == nil then extra_args = "" end
+	local stdout = run_child_process(zoxide_path .. " query -l " .. extra_args)
 
 	local workspace_table = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
@@ -62,7 +75,7 @@ local function workspace_switcher(extra_args)
 								inner_pane
 							)
 							-- increment path score
-							wezterm.run_child_process({ os.getenv("SHELL"), "-c", zoxide_path .. " add " .. fullPath })
+							run_child_process(zoxide_path .. " add " .. fullPath)
 						else
 							-- if workspace is choosen
 							inner_window:perform_action(
