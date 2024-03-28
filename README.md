@@ -1,6 +1,6 @@
 # smart_workspace_switcher.wezterm
 
-A smart Wezterm workspace switcher inspired by [joshmedeski/t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager) and its successor [joshmedeski/sesh](https://github.com/joshmedeski/sesh)
+A smart Wezterm workspace switcher inspired by [t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager) and its successor [sesh](https://github.com/joshmedeski/sesh)
 
 ## Usage
 
