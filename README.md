@@ -86,6 +86,15 @@ Adding the path as a part of the right-status can be done with the `smart_worksp
     }))
   end)
   ```
+
+#### Callbacks when switching workspace
+Use the `smart_workspace_switcher.workspace_chosen` event which is emitted when choosing the workspace to add a callback function.
+  ```lua
+  wezterm.on("smart_workspace_switcher.workspace_chosen", function(window, path)
+    wezterm.log_info("THIS IS EMITTED FROM THE CALLBACK")
+  end)
+  ```
+
 #### Workspace formatter
 Set a custom workspace formatter, see [Wezterm formatting docs](https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
 
