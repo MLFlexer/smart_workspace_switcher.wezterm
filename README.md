@@ -75,23 +75,15 @@ If you want your project switcher only to select projects from this list, but st
   ```
 
 #### Update right-status with the path
-Adding the path as a part of the right-status can be done via. [update-right-status](https://wezfurlong.org/wezterm/config/lua/window-events/update-right-status.html) event
+Adding the path as a part of the right-status can be done with the `smart_workspace_switcher.workspace_chosen` event which is emitted when choosing the workspace.
 
   ```lua
-  local function base_path_name(str)
-    return string.gsub(str, "(.*[/\\])(.*)", "%2")
-  end
-
-  local function update_right_status(window)
-    local title = base_path_name(window:active_workspace())
+  wezterm.on("smart_workspace_switcher.workspace_chosen", function(window, path)
+    local base_path = string.gsub(path, "(.*[/\\])(.*)", "%2")
     window:set_right_status(wezterm.format({
-      { Foreground = { Color = "green" } },
-      { Text = title .. "  " },
+      { Foreground = { Color = colors.colors.ansi[5] } },
+      { Text = base_path .. "  " },
     }))
-  end
-
-  wezterm.on("update-right-status", function(window, _)
-    update_right_status(window)
   end)
   ```
 #### Workspace formatter
