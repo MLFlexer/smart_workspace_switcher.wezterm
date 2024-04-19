@@ -30,7 +30,9 @@ end
 ---@param extra_args? string
 ---@return { id: string, label: string }[]
 local function get_zoxide_workspaces(extra_args)
-	if extra_args == nil then extra_args = "" end
+	if extra_args == nil then
+		extra_args = ""
+	end
 	local stdout = run_child_process(zoxide_path .. " query -l " .. extra_args)
 
 	local workspace_table = {}
@@ -85,6 +87,7 @@ local function workspace_switcher(extra_args)
 								inner_pane
 							)
 						end
+						wezterm.emit("smart_workspace_switcher.workspace_chosen", window, id)
 					end
 				end),
 				title = "Choose Workspace",
