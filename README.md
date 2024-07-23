@@ -78,19 +78,34 @@ If you want your project switcher only to select projects from this list, but st
 Adding the path as a part of the right-status can be done with the `smart_workspace_switcher.workspace_chosen` event which is emitted when choosing the workspace.
 
   ```lua
-  wezterm.on("smart_workspace_switcher.workspace_chosen", function(window, path)
+  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, path)
     local base_path = string.gsub(path, "(.*[/\\])(.*)", "%2")
     window:set_right_status(wezterm.format({
       { Foreground = { Color = colors.colors.ansi[5] } },
       { Text = base_path .. "  " },
     }))
   end)
+
+  wezterm.on("smart_workspace_switcher.workspace_switcher.created", function(window, path)
+    local base_path = string.gsub(path, "(.*[/\\])(.*)", "%2")
+    window:set_right_status(wezterm.format({
+      { Foreground = { Color = colors.colors.ansi[5] } },
+      { Text = base_path .. "  " },
+    }))
+  end)
+
   ```
 
-#### Callbacks when switching workspace
-Use the `smart_workspace_switcher.workspace_chosen` event which is emitted when choosing the workspace to add a callback function.
+#### Events
+Use the events which are emitted when choosing the workspace to add a callback function. The following events are available:
+* `smart_workspace_switcher.workspace_switcher.start` - when the fuzzy finder starts
+* `smart_workspace_switcher.workspace_switcher.selected` - when a element is selected
+* `smart_workspace_switcher.workspace_switcher.created` - after a new workspace is created and switched to upon selecting
+* `smart_workspace_switcher.workspace_switcher.chosen` - after switching to a new workspace upon selecting
+
+See example for use below:
   ```lua
-  wezterm.on("smart_workspace_switcher.workspace_chosen", function(window, path)
+  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, path)
     wezterm.log_info("THIS IS EMITTED FROM THE CALLBACK")
   end)
   ```

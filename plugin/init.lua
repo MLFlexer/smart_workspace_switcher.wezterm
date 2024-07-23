@@ -10,7 +10,7 @@ local zoxide_path = "zoxide"
 ---@return string
 local workspace_formatter = function(label)
 	return wezterm.format({
-		{ Text = "󱂬: " .. label },
+		{ Text = "󱂬 : " .. label },
 	})
 end
 
@@ -18,11 +18,15 @@ end
 ---@return string
 local run_child_process = function(cmd)
 	local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
-	local stdout
+	local success, stdout, stderr
 	if is_windows then
-		_, stdout, _ = wezterm.run_child_process({ "cmd", "/c", cmd })
+		success, stdout, stderr = wezterm.run_child_process({ "cmd", "/c", cmd })
 	else
-		_, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+		success, stdout, stderr = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+	end
+
+	if not success then
+		wezterm.log_error("Child process '" .. cmd .. "' failed with stderr: '" .. stderr .. "'")
 	end
 	return stdout
 end
@@ -56,13 +60,14 @@ end
 ---@return action_callback
 local function workspace_switcher(extra_args)
 	return wezterm.action_callback(function(window, pane)
+		wezterm.emit("smart_workspace_switcher.workspace_switcher.start", window)
 		local workspaces = get_zoxide_workspaces(extra_args)
 
 		window:perform_action(
 			act.InputSelector({
 				action = wezterm.action_callback(function(inner_window, inner_pane, id, label)
-					if not id and not label then -- do nothing
-					else
+					if id and label then
+						wezterm.emit("smart_workspace_switcher.workspace_switcher.selected", window, id, label)
 						local fullPath = string.gsub(label, "^~", wezterm.home_dir)
 						if fullPath:sub(1, 1) == "/" or fullPath:sub(3, 3) == "\\" then
 							-- if path is choosen
@@ -76,6 +81,16 @@ local function workspace_switcher(extra_args)
 								}),
 								inner_pane
 							)
+							for _, mux_win in ipairs(wezterm.mux.all_windows()) do
+								if mux_win:get_workspace() == label then
+									wezterm.emit(
+										"smart_workspace_switcher.workspace_switcher.created",
+										mux_win,
+										id,
+										label
+									)
+								end
+							end
 							-- increment path score
 							run_child_process(zoxide_path .. " add " .. fullPath)
 						else
@@ -86,8 +101,17 @@ local function workspace_switcher(extra_args)
 								}),
 								inner_pane
 							)
+							for _, mux_win in ipairs(wezterm.mux.all_windows()) do
+								if mux_win:get_workspace() == label then
+									wezterm.emit(
+										"smart_workspace_switcher.workspace_switcher.chosen",
+										mux_win,
+										id,
+										label
+									)
+								end
+							end
 						end
-						wezterm.emit("smart_workspace_switcher.workspace_chosen", window, id)
 					end
 				end),
 				title = "Choose Workspace",
