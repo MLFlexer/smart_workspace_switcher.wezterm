@@ -10,7 +10,7 @@ local zoxide_path = "zoxide"
 ---@return string
 local workspace_formatter = function(label)
 	return wezterm.format({
-		{ Text = "󱂬: " .. label },
+		{ Text = "󱂬 : " .. label },
 	})
 end
 
@@ -18,11 +18,15 @@ end
 ---@return string
 local run_child_process = function(cmd)
 	local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
-	local stdout
+	local success, stdout, stderr
 	if is_windows then
-		_, stdout, _ = wezterm.run_child_process({ "cmd", "/c", cmd })
+		success, stdout, stderr = wezterm.run_child_process({ "cmd", "/c", cmd })
 	else
-		_, stdout, _ = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+		success, stdout, stderr = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+	end
+
+	if not success then
+		wezterm.log_error("Child process '" .. cmd .. "' failed with stderr: '" .. stderr .. "'")
 	end
 	return stdout
 end
