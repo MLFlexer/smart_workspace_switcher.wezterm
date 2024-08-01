@@ -40,18 +40,22 @@ local function get_zoxide_workspaces(extra_args)
 	local stdout = run_child_process(zoxide_path .. " query -l " .. extra_args)
 
 	local workspace_table = {}
+	local workspace_ids = {}
 	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
 		table.insert(workspace_table, {
 			id = workspace,
 			label = workspace_formatter(workspace),
 		})
+		workspace_ids[workspace] = true
 	end
 	for _, path in ipairs(wezterm.split_by_newlines(stdout)) do
 		local updated_path = string.gsub(path, wezterm.home_dir, "~")
-		table.insert(workspace_table, {
-			id = path,
-			label = updated_path,
-		})
+		if not workspace_ids[updated_path] then
+			table.insert(workspace_table, {
+				id = path,
+				label = updated_path,
+			})
+		end
 	end
 	return workspace_table
 end
