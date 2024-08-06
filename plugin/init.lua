@@ -106,7 +106,7 @@ local function workspace_switcher(extra_args)
 								inner_pane
 							)
 							for _, mux_win in ipairs(wezterm.mux.all_windows()) do
-								if mux_win:get_workspace() == label then
+								if mux_win:get_workspace() == id then
 									wezterm.emit(
 										"smart_workspace_switcher.workspace_switcher.chosen",
 										mux_win,
