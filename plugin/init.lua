@@ -12,7 +12,7 @@ local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
 ---@alias choice_opts {extra_args?: string, workspace_ids?: workspace_ids}
 ---@alias InputSelector_choices { id: string, label: string }[]
 
----@class module
+---@class public_module
 ---@field zoxide_path string
 ---@field choices {get_zoxide_elements: (fun(choices: InputSelector_choices, opts: choice_opts?): InputSelector_choices), get_workspace_elements: (fun(choices: InputSelector_choices): (InputSelector_choices, workspace_ids))}
 ---@field workspace_formatter fun(label: string): string
