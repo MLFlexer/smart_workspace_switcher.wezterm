@@ -14,118 +14,110 @@ A smart Wezterm workspace switcher inspired by [t-smart-tmux-session-manager](ht
 
 ### Setup
 
-1. require the plugin:
+1. Require the plugin:
 
     ```lua
     local wezterm = require("wezterm")
     local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
     ```
 
-2. Apply default keybinding to config:
+2. Apply the default keybinding to the config:
 
     ```lua
     workspace_switcher.apply_to_config(config)
     ```
 
-Or make your own keybinding, see [Configuration - Keybinding](#Keybinding)
-
+Or create your own keybinding, see [Configuration - Keybinding](#Keybinding).
 
 ### Configuration:
 #### Keybinding
-Add custom keybinding
+To add a custom keybinding:
 
   ```lua
   config.keys = {
     -- ...
     -- your other keybindings
     {
-    key = "s",
-    mods = "ALT",
-    action = workspace_switcher.switch_workspace(),
+      key = "s",
+      mods = "ALT",
+      action = workspace_switcher.switch_workspace(),
     }
   }
   ```
 
-#### Changing default workspace name
+#### Changing the Default Workspace Name
+You can set a default workspace name:
+
 ```lua
 config.default_workspace = "~"
 ```
 
-#### Additional filtering
+#### Additional Filtering
 
-Users may also choose to include `extra_args` in the call to `switch_workspace`. The string contents of this value are appended to the call to `zoxide query -l`. This can be used to further filter the results of the query. For example, imagine one has a predefined list of projects from which they wish to select. It might be a file, ~/.projects, with contents like:
-
-```
-/Users/you/projects/gitlab.com/foo/bar
-/Users/you/projects/github.com/MLFlexer/smart_workspace_switcher.wezterm
-```
-
-If you want your project switcher only to select projects from this list, but still make use of the zoxide query ordering, you can call the plugin as:
+You can include `extra_args` in the call to `switch_workspace` to filter the results of the zoxide query further. The `extra_args` is just a string concatenated to the command like so: `zoxide query -l <extra_args>`. For example, to select projects from a predefined list in `~/.projects`, call the plugin like this:
 
   ```lua
-  config.keys = {
-    -- ...
-    -- your other keybindings
-    {
-    key = "s",
-    mods = "ALT",
-    action = workspace_switcher.switch_workspace(" | rg -Fxf ~/.projects"),
-    }
-  }
+  workspace_switcher.switch_workspace({ extra_args = " | rg -Fxf ~/.projects" })
   ```
 
-#### Update right-status with the path
-Adding the path as a part of the right-status can be done with the `smart_workspace_switcher.workspace_chosen` event which is emitted when choosing the workspace.
+#### Updating the Right Status with the Path
+
+To add the selected path to the right status bar, use the `smart_workspace_switcher.workspace_switcher.chosen` event emitted when choosing a workspace:
 
   ```lua
-  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, path)
-    local base_path = string.gsub(path, "(.*[/\\])(.*)", "%2")
+  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, workspace)
+    local base_path = string.gsub(workspace, "(.*[/\\])(.*)", "%2")
     window:set_right_status(wezterm.format({
-      { Foreground = { Color = colors.colors.ansi[5] } },
+      { Foreground = { Color = "green" } },
       { Text = base_path .. "  " },
     }))
   end)
 
-  wezterm.on("smart_workspace_switcher.workspace_switcher.created", function(window, path)
-    local base_path = string.gsub(path, "(.*[/\\])(.*)", "%2")
+  wezterm.on("smart_workspace_switcher.workspace_switcher.created", function(window, workspace)
+    local base_path = string.gsub(workspace, "(.*[/\\])(.*)", "%2")
     window:set_right_status(wezterm.format({
-      { Foreground = { Color = colors.colors.ansi[5] } },
+      { Foreground = { Color = "green" } },
       { Text = base_path .. "  " },
     }))
   end)
-
   ```
 
 #### Events
-Use the events which are emitted when choosing the workspace to add a callback function. The following events are available:
-* `smart_workspace_switcher.workspace_switcher.start` - when the fuzzy finder starts
-* `smart_workspace_switcher.workspace_switcher.selected` - when a element is selected
-* `smart_workspace_switcher.workspace_switcher.created` - after a new workspace is created and switched to upon selecting
-* `smart_workspace_switcher.workspace_switcher.chosen` - after switching to a new workspace upon selecting
 
-See example for use below:
+The following events are available and can be used to trigger custom behavior:
+
+* `smart_workspace_switcher.workspace_switcher.start` - Triggered when the fuzzy finder starts.
+* `smart_workspace_switcher.workspace_switcher.selected` - Triggered when an element is selected.
+* `smart_workspace_switcher.workspace_switcher.created` - Triggered after creating and switching to a new workspace.
+* `smart_workspace_switcher.workspace_switcher.chosen` - Triggered after switching to a workspace.
+
+Example usage:
+
   ```lua
-  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, path)
+  wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, workspace)
     wezterm.log_info("THIS IS EMITTED FROM THE CALLBACK")
   end)
   ```
 
-#### Workspace formatter
-Set a custom workspace formatter, see [Wezterm formatting docs](https://wezfurlong.org/wezterm/config/lua/wezterm/format.html)
+#### Workspace Formatter
+
+Set a custom workspace formatter using the following example. For more information, see the [Wezterm formatting docs](https://wezfurlong.org/wezterm/config/lua/wezterm/format.html):
 
   ```lua
-  workspace_switcher.set_workspace_formatter(function(label)
+  workspace_switcher.workspace_formatter = function(label)
     return wezterm.format({
       { Attribute = { Italic = true } },
       { Foreground = { Color = "green" } },
       { Background = { Color = "black" } },
       { Text = "󱂬: " .. label },
     })
-  end)
+  end
   ```
-#### Zoxide path
-Define path to zoxide:
+
+#### Zoxide Path
+
+To define a custom path to `zoxide`:
 
   ```lua
-  workspace_switcher.set_zoxide_path("/path/to/zoxide)
+  workspace_switcher.zoxide_path = "/path/to/zoxide"
   ```
