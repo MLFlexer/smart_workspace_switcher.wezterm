@@ -60,6 +60,25 @@ You can include `extra_args` in the call to `switch_workspace` to filter the res
   workspace_switcher.switch_workspace({ extra_args = " | rg -Fxf ~/.projects" })
   ```
 
+#### Changing elements of the fuzzy finder
+
+You can change the list of elements of the fuzzy finder by setting a new function for `get_choices` likes so:
+
+```lua
+local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
+workspace_switcher.get_choices = function(opts)
+  -- this will ONLY show the workspace elements, NOT the Zoxide results
+	return workspace_switcher.choices.get_workspace_elements({})
+end
+```
+
+By default the function uses the following functions to create a list:
+
+```lua
+workspace_switcher.choices.get_workspace_elements({ id: string, label: string }[])
+workspace_switcher.choices.get_zoxide_elements({ id: string, label: string }[], {extra_args?: string, workspace_ids?: workspace_ids}?)
+```
+
 #### Updating the Right Status with the Path
 
 To add the selected path to the right status bar, use the `smart_workspace_switcher.workspace_switcher.chosen` event emitted when choosing a workspace:
