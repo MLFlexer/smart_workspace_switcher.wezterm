@@ -1,29 +1,39 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
+local mux = wezterm.mux
+
+local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
 
 ---@alias action_callback any
+---@alias MuxWindow any
+---@alias Pane any
 
----@type string
-local zoxide_path = "zoxide"
+---@alias workspace_ids table<string, boolean>
+---@alias choice_opts {extra_args?: string, workspace_ids?: workspace_ids}
+---@alias InputSelector_choices { id: string, label: string }[]
 
----@param label string
----@return string
-local workspace_formatter = function(label)
-	return wezterm.format({
-		{ Text = "󱂬 : " .. label },
-	})
-end
+---@class public_module
+---@field zoxide_path string
+---@field choices {get_zoxide_elements: (fun(choices: InputSelector_choices, opts: choice_opts?): InputSelector_choices), get_workspace_elements: (fun(choices: InputSelector_choices): (InputSelector_choices, workspace_ids))}
+---@field workspace_formatter fun(label: string): string
+local pub = {
+	zoxide_path = "zoxide",
+	choices = {},
+	workspace_formatter = function(label)
+		return wezterm.format({
+			{ Text = "󱂬 : " .. label },
+		})
+	end,
+}
 
 ---@param cmd string
 ---@return string
 local run_child_process = function(cmd)
-	local is_windows = string.find(wezterm.target_triple, "windows") ~= nil
-	local success, stdout, stderr
+	local process_args = { os.getenv("SHELL"), "-c", cmd }
 	if is_windows then
-		success, stdout, stderr = wezterm.run_child_process({ "cmd", "/c", cmd })
-	else
-		success, stdout, stderr = wezterm.run_child_process({ os.getenv("SHELL"), "-c", cmd })
+		process_args = { "cmd", "/c", cmd }
 	end
+	local success, stdout, stderr = wezterm.run_child_process(process_args)
 
 	if not success then
 		wezterm.log_error("Child process '" .. cmd .. "' failed with stderr: '" .. stderr .. "'")
@@ -31,95 +41,149 @@ local run_child_process = function(cmd)
 	return stdout
 end
 
----@param extra_args? string
----@return { id: string, label: string }[]
-local function get_zoxide_workspaces(extra_args)
-	if extra_args == nil then
-		extra_args = ""
-	end
-	local stdout = run_child_process(zoxide_path .. " query -l " .. extra_args)
-
-	local workspace_table = {}
+---@param choice_table InputSelector_choices
+---@return InputSelector_choices, workspace_ids
+function pub.choices.get_workspace_elements(choice_table)
 	local workspace_ids = {}
-	for _, workspace in ipairs(wezterm.mux.get_workspace_names()) do
-		table.insert(workspace_table, {
+	for _, workspace in ipairs(mux.get_workspace_names()) do
+		table.insert(choice_table, {
 			id = workspace,
-			label = workspace_formatter(workspace),
+			label = pub.workspace_formatter(workspace),
 		})
 		workspace_ids[workspace] = true
 	end
+	return choice_table, workspace_ids
+end
+
+---@param choice_table InputSelector_choices
+---@param opts? choice_opts
+---@return InputSelector_choices
+function pub.choices.get_zoxide_elements(choice_table, opts)
+	if opts == nil then
+		opts = { extra_args = "", workspace_ids = {} }
+	end
+
+	local stdout = run_child_process(pub.zoxide_path .. " query -l " .. (opts.extra_args or ""))
+
 	for _, path in ipairs(wezterm.split_by_newlines(stdout)) do
 		local updated_path = string.gsub(path, wezterm.home_dir, "~")
-		if not workspace_ids[updated_path] then
-			table.insert(workspace_table, {
+		if not opts.workspace_ids[updated_path] then
+			table.insert(choice_table, {
 				id = path,
 				label = updated_path,
 			})
 		end
 	end
-	return workspace_table
+	return choice_table
 end
 
----@param extra_args? string
+---Returns choices for the InputSelector
+---@param opts? choice_opts
+---@return InputSelector_choices
+function pub.get_choices(opts)
+	if opts == nil then
+		opts = { extra_args = "" }
+	end
+	---@type InputSelector_choices
+	local choices = {}
+	choices, opts.workspace_ids = pub.choices.get_workspace_elements(choices)
+	choices = pub.choices.get_zoxide_elements(choices, opts)
+	return choices
+end
+
+---@param workspace string
+---@return MuxWindow
+local function get_current_mux_window(workspace)
+	for _, mux_win in ipairs(mux.all_windows()) do
+		if mux_win:get_workspace() == workspace then
+			return mux_win
+		end
+	end
+	error("Could not find a workspace with the name: " .. workspace)
+end
+
+---Check if the workspace exists
+---@param workspace string
+---@return boolean
+local function workspace_exists(workspace)
+	for _, workspace_name in ipairs(mux.get_workspace_names()) do
+		if workspace == workspace_name then
+			return true
+		end
+	end
+	return false
+end
+
+---InputSelector callback when zoxide supplied element is chosen
+---@param window MuxWindow
+---@param pane Pane
+---@param path string
+---@param label_path string
+local function zoxide_chosen(window, pane, path, label_path)
+	window:perform_action(
+		act.SwitchToWorkspace({
+			name = label_path,
+			spawn = {
+				label = "Workspace: " .. label_path,
+				cwd = path,
+			},
+		}),
+		pane
+	)
+	wezterm.emit(
+		"smart_workspace_switcher.workspace_switcher.created",
+		get_current_mux_window(label_path),
+		path,
+		label_path
+	)
+	-- increment zoxide path score
+	run_child_process(pub.zoxide_path .. " add " .. path)
+end
+
+---InputSelector callback when workspace element is chosen
+---@param window MuxWindow
+---@param pane Pane
+---@param workspace string
+---@param label_workspace string
+local function workspace_chosen(window, pane, workspace, label_workspace)
+	window:perform_action(
+		act.SwitchToWorkspace({
+			name = workspace,
+		}),
+		pane
+	)
+	wezterm.emit(
+		"smart_workspace_switcher.workspace_switcher.chosen",
+		get_current_mux_window(workspace),
+		workspace,
+		label_workspace
+	)
+end
+
+---@param opts? choice_opts
 ---@return action_callback
-local function workspace_switcher(extra_args)
+function pub.switch_workspace(opts)
 	return wezterm.action_callback(function(window, pane)
 		wezterm.emit("smart_workspace_switcher.workspace_switcher.start", window)
-		local workspaces = get_zoxide_workspaces(extra_args)
+		local choices = pub.get_choices(opts)
 
 		window:perform_action(
 			act.InputSelector({
 				action = wezterm.action_callback(function(inner_window, inner_pane, id, label)
 					if id and label then
 						wezterm.emit("smart_workspace_switcher.workspace_switcher.selected", window, id, label)
-						local fullPath = string.gsub(label, "^~", wezterm.home_dir)
-						if fullPath:sub(1, 1) == "/" or fullPath:sub(3, 3) == "\\" then
-							-- if path is choosen
-							inner_window:perform_action(
-								act.SwitchToWorkspace({
-									name = label,
-									spawn = {
-										label = "Workspace: " .. label,
-										cwd = fullPath,
-									},
-								}),
-								inner_pane
-							)
-							for _, mux_win in ipairs(wezterm.mux.all_windows()) do
-								if mux_win:get_workspace() == label then
-									wezterm.emit(
-										"smart_workspace_switcher.workspace_switcher.created",
-										mux_win,
-										id,
-										label
-									)
-								end
-							end
-							-- increment path score
-							run_child_process(zoxide_path .. " add " .. fullPath)
+
+						if workspace_exists(id) then
+							-- workspace is choosen
+							workspace_chosen(inner_window, inner_pane, id, label)
 						else
-							-- if workspace is choosen
-							inner_window:perform_action(
-								act.SwitchToWorkspace({
-									name = id,
-								}),
-								inner_pane
-							)
-							for _, mux_win in ipairs(wezterm.mux.all_windows()) do
-								if mux_win:get_workspace() == id then
-									wezterm.emit(
-										"smart_workspace_switcher.workspace_switcher.chosen",
-										mux_win,
-										id,
-										label
-									)
-								end
-							end
+							-- path is choosen
+							zoxide_chosen(inner_window, inner_pane, id, label)
 						end
 					end
 				end),
 				title = "Choose Workspace",
-				choices = workspaces,
+				choices = choices,
 				fuzzy = true,
 			}),
 			pane
@@ -127,29 +191,14 @@ local function workspace_switcher(extra_args)
 	end)
 end
 
----sets a default keybind to ALT-s
+---sets default keybind to ALT-s
 ---@param config table
-local function apply_to_config(config)
+function pub.apply_to_config(config)
 	table.insert(config.keys, {
 		key = "s",
 		mods = "ALT",
-		action = workspace_switcher(),
+		action = pub.switch_workspace(),
 	})
 end
 
----@param path string
-local function set_zoxide_path(path)
-	zoxide_path = path
-end
-
----@param formatter fun(label: string): string
-local function set_workspace_formatter(formatter)
-	workspace_formatter = formatter
-end
-
-return {
-	apply_to_config = apply_to_config,
-	set_zoxide_path = set_zoxide_path,
-	set_workspace_formatter = set_workspace_formatter,
-	switch_workspace = workspace_switcher,
-}
+return pub
