@@ -68,7 +68,7 @@ You can change the list of elements of the fuzzy finder by setting a new functio
 local workspace_switcher = wezterm.plugin.require("https://github.com/MLFlexer/smart_workspace_switcher.wezterm")
 workspace_switcher.get_choices = function(opts)
   -- this will ONLY show the workspace elements, NOT the Zoxide results
-	return workspace_switcher.choices.get_workspace_elements({})
+  return workspace_switcher.choices.get_workspace_elements({})
 end
 ```
 
