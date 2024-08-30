@@ -164,7 +164,7 @@ end
 ---@return action_callback
 function pub.switch_workspace(opts)
 	return wezterm.action_callback(function(window, pane)
-		wezterm.emit("smart_workspace_switcher.workspace_switcher.start", window)
+		wezterm.emit("smart_workspace_switcher.workspace_switcher.start", window, pane)
 		local choices = pub.get_choices(opts)
 
 		window:perform_action(
@@ -181,8 +181,11 @@ function pub.switch_workspace(opts)
 							zoxide_chosen(inner_window, inner_pane, id, label)
 						end
 					end
+					wezterm.emit("smart_workspace_switcher.workspace_switcher.finished", window, pane)
 				end),
 				title = "Choose Workspace",
+				description = "Select a workspace and press Enter = accept, Esc = cancel, / = filter",
+				fuzzy_description = "Workspace to switch: ",
 				choices = choices,
 				fuzzy = true,
 			}),
