@@ -106,7 +106,7 @@ To add the selected path to the right status bar, use the `smart_workspace_switc
 The following events are available and can be used to trigger custom behavior:
 
 * `smart_workspace_switcher.workspace_switcher.start` - Triggered when the fuzzy finder starts.
-* `smart_workspace_switcher.workspace_switcher.finished` - Triggered before the fuzzy finder closes.
+* `smart_workspace_switcher.workspace_switcher.canceled` - Triggered if no element is chosen.
 * `smart_workspace_switcher.workspace_switcher.selected` - Triggered when an element is selected.
 * `smart_workspace_switcher.workspace_switcher.created` - Triggered after creating and switching to a new workspace.
 * `smart_workspace_switcher.workspace_switcher.chosen` - Triggered after switching to a workspace.
