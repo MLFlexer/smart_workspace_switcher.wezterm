@@ -85,16 +85,18 @@ To add the selected path to the right status bar, use the `smart_workspace_switc
 
   ```lua
   wezterm.on("smart_workspace_switcher.workspace_switcher.chosen", function(window, workspace)
+    local gui_win = window:gui_window()
     local base_path = string.gsub(workspace, "(.*[/\\])(.*)", "%2")
-    window:set_right_status(wezterm.format({
+    gui_win:set_right_status(wezterm.format({
       { Foreground = { Color = "green" } },
       { Text = base_path .. "  " },
     }))
   end)
 
   wezterm.on("smart_workspace_switcher.workspace_switcher.created", function(window, workspace)
+    local gui_win = window:gui_window()
     local base_path = string.gsub(workspace, "(.*[/\\])(.*)", "%2")
-    window:set_right_status(wezterm.format({
+    gui_win:set_right_status(wezterm.format({
       { Foreground = { Color = "green" } },
       { Text = base_path .. "  " },
     }))
@@ -110,6 +112,9 @@ The following events are available and can be used to trigger custom behavior:
 * `smart_workspace_switcher.workspace_switcher.selected` - Triggered when an element is selected.
 * `smart_workspace_switcher.workspace_switcher.created` - Triggered after creating and switching to a new workspace.
 * `smart_workspace_switcher.workspace_switcher.chosen` - Triggered after switching to a workspace.
+
+> [!NOTE]
+> The `created` and `chosen` events emit [MuxWindow](https://wezfurlong.org/wezterm/config/lua/mux-window/) objects while the others emit [GuiWindow](https://wezfurlong.org/wezterm/config/lua/window/index.html) objects. 
 
 Example usage:
 
