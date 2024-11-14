@@ -39,8 +39,13 @@ To add a custom keybinding:
     -- your other keybindings
     {
       key = "s",
-      mods = "ALT",
+      mods = "LEADER",
       action = workspace_switcher.switch_workspace(),
+    },
+    {
+      key = "S",
+      mods = "LEADER",
+      action = workspace_switcher.switch_to_prev_workspace(),
     }
   }
   ```
