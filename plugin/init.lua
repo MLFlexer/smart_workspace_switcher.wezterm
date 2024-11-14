@@ -198,18 +198,40 @@ end
 ---sets default keybind to ALT-s
 ---@param config table
 function pub.apply_to_config(config)
-	if config then
-		if not config.keys then
-			config.keys = {}
-		end
-	else
-		config = { keys = {} }
-	end
 	table.insert(config.keys, {
 		key = "s",
-		mods = "ALT",
+		mods = "LEADER",
+		action = pub.switch_workspace(),
+	})
+	table.insert(config.keys, {
+		key = "S",
+		mods = "LEADER",
 		action = pub.switch_workspace(),
 	})
 end
+
+function pub.switch_to_prev_workspace()
+	return wezterm.action_callback(function(window, pane)
+		local current_workspace = window:active_workspace()
+		local previous_workspace = wezterm.GLOBAL.previous_workspace
+
+		if current_workspace == previous_workspace and previous_workspace ~= nil then
+			return
+		end
+
+		wezterm.GLOBAL.previous_workspace = current_workspace
+
+		window:perform_action(
+			act.SwitchToWorkspace({
+				name = previous_workspace,
+			}),
+			pane
+		)
+	end)
+end
+
+wezterm.on("smart_workspace_switcher.workspace_switcher.selected", function(window, _, _)
+	wezterm.GLOBAL.previous_workspace = window:active_workspace()
+end)
 
 return pub
