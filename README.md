@@ -117,6 +117,7 @@ The following events are available and can be used to trigger custom behavior:
 * `smart_workspace_switcher.workspace_switcher.selected` - Triggered when an element is selected.
 * `smart_workspace_switcher.workspace_switcher.created` - Triggered after creating and switching to a new workspace.
 * `smart_workspace_switcher.workspace_switcher.chosen` - Triggered after switching to a workspace.
+* `smart_workspace_switcher.workspace_switcher.switched_to_prev` - Triggered after switching to a previous workspace.
 
 > [!NOTE]
 > The `created` and `chosen` events emit [MuxWindow](https://wezfurlong.org/wezterm/config/lua/mux-window/) objects while the others emit [GuiWindow](https://wezfurlong.org/wezterm/config/lua/window/index.html) objects. 
