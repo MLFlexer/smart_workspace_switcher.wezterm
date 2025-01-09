@@ -227,7 +227,7 @@ function pub.switch_to_prev_workspace()
 			}),
 			pane
 		)
-		wezterm.emit("smart_workspace_switcher.workspace_switcher.switched_to_prev", window, pane)
+		wezterm.emit("smart_workspace_switcher.workspace_switcher.switched_to_prev", window, pane, previous_workspace)
 	end)
 end
 
