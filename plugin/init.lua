@@ -198,6 +198,14 @@ end
 ---sets default keybind to ALT-s
 ---@param config table
 function pub.apply_to_config(config)
+	if config == nil then
+		config = {}
+	end
+
+	if config.keys == nil then
+		config.keys = {}
+	end
+
 	table.insert(config.keys, {
 		key = "s",
 		mods = "LEADER",
