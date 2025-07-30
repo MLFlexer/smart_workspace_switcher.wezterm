@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=MLFlexer&project=smart_workspace_switcher.wezterm&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # smart_workspace_switcher.wezterm
 
 A smart Wezterm workspace switcher inspired by [t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager) and its successor [sesh](https://github.com/joshmedeski/sesh)
