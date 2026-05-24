@@ -1,3 +1,8 @@
+> [!WARNING]
+> This project is archived and no longer maintained. 
+> I'm currently focusing on my PhD and don't find it interesting to work on this anymore. 
+> Please fork/use one of the forks instead 😃
+
 # smart_workspace_switcher.wezterm
 
 A smart Wezterm workspace switcher inspired by [t-smart-tmux-session-manager](https://github.com/joshmedeski/t-smart-tmux-session-manager) and its successor [sesh](https://github.com/joshmedeski/sesh)
