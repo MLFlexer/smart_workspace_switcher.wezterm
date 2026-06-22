@@ -26,6 +26,18 @@ local pub = {
 	end,
 }
 
+local cached_zoxide_choices = nil
+local cache_timestamp = 0
+
+function pub.invalidate_cache()
+	cached_zoxide_choices = nil
+	cache_timestamp = 0
+end
+
+wezterm.on("smart_workspace_switcher.workspace_switcher.invalidate_cache", function()
+	pub.invalidate_cache()
+end)
+
 ---@param cmd string
 ---@return string
 local run_child_process = function(cmd)
@@ -77,17 +89,53 @@ function pub.choices.get_zoxide_elements(choice_table, opts)
 	return choice_table
 end
 
+-- Modify the get_choices function to include caching
 ---Returns choices for the InputSelector
 ---@param opts? choice_opts
+---@param cache_ttl? number
 ---@return InputSelector_choices
-function pub.get_choices(opts)
+function pub.get_choices(opts, cache_ttl)
 	if opts == nil then
 		opts = { extra_args = "" }
 	end
+
+	-- Default cache_ttl to 0 (no cache)
+	cache_ttl = cache_ttl or 0
+
 	---@type InputSelector_choices
 	local choices = {}
 	choices, opts.workspace_ids = pub.choices.get_workspace_elements(choices)
-	choices = pub.choices.get_zoxide_elements(choices, opts)
+
+	-- Check if zoxide cache is valid
+	local current_time = os.time()
+	if cache_ttl > 0 and cached_zoxide_choices and (current_time - cache_timestamp) < cache_ttl then
+		for _, choice in ipairs(cached_zoxide_choices) do
+			if not opts.workspace_ids[choice.label] then
+				table.insert(choices, choice)
+			end
+		end
+	else
+		local zoxide_choices = {}
+		local stdout = run_child_process(pub.zoxide_path .. " query -l " .. (opts.extra_args or ""))
+		for _, path in ipairs(wezterm.split_by_newlines(stdout)) do
+			local updated_path = string.gsub(path, wezterm.home_dir, "~")
+			table.insert(zoxide_choices, {
+				id = path,
+				label = updated_path,
+			})
+			if not opts.workspace_ids[updated_path] then
+				table.insert(choices, {
+					id = path,
+					label = updated_path,
+				})
+			end
+		end
+		if cache_ttl > 0 then
+			cached_zoxide_choices = zoxide_choices
+			cache_timestamp = current_time
+		end
+	end
+
 	return choices
 end
 
@@ -160,12 +208,14 @@ local function workspace_chosen(window, pane, workspace, label_workspace)
 	)
 end
 
+-- Modify the switch_workspace function to accept cache_ttl
 ---@param opts? choice_opts
+---@param cache_ttl? number
 ---@return action_callback
-function pub.switch_workspace(opts)
+function pub.switch_workspace(opts, cache_ttl)
 	return wezterm.action_callback(function(window, pane)
 		wezterm.emit("smart_workspace_switcher.workspace_switcher.start", window, pane)
-		local choices = pub.get_choices(opts)
+		local choices = pub.get_choices(opts, cache_ttl)
 
 		window:perform_action(
 			act.InputSelector({
@@ -174,10 +224,10 @@ function pub.switch_workspace(opts)
 						wezterm.emit("smart_workspace_switcher.workspace_switcher.selected", window, id, label)
 
 						if workspace_exists(id) then
-							-- workspace is choosen
+							-- workspace is chosen
 							workspace_chosen(inner_window, inner_pane, id, label)
 						else
-							-- path is choosen
+							-- path is chosen
 							zoxide_chosen(inner_window, inner_pane, id, label)
 						end
 					else
